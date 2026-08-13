@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GreenVolt Energy - Incident Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --bg:#0a0f1c;
+    --bg-card:#121a2b;
+    --border:rgba(255,255,255,.07);
+    --text:#e7eaf0;
+    --text-muted:#8b95a7;
+    --green:#00d98a;
+    --teal:#00b0b3;
+    --blue:#1b7fd6;
+    --gradient:linear-gradient(90deg,var(--green) 0%,var(--teal) 50%,var(--blue) 100%);
+    --bad:#f4475e;
+    --warn:#f5b93d;
+}
+
+*{box-sizing:border-box;}
+
+html,body{
+    height:100%;
+    overflow-x:hidden;
+}
+body{
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    background:
+        radial-gradient(1200px 500px at 15% -10%, rgba(0,217,138,.08), transparent),
+        radial-gradient(1200px 500px at 85% 0%, rgba(27,127,214,.10), transparent),
+        var(--bg);
+    color:var(--text);
+    font-family:'Inter',Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+}
+
+.top-accent{
+    height:4px;
+    background:var(--gradient);
+}
+
+header{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:36px 24px;
+    gap:20px;
+    border-bottom:1px solid var(--border);
+}
+
+.logo{
+    height:52px;
+    background:#fff;
+    padding:8px 18px;
+    border-radius:10px;
+}
+
+.incident-title{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:12px;
+}
+.pulse-dot{
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    background:var(--bad);
+    box-shadow:0 0 0 0 rgba(244,71,94,.6);
+    animation:pulse 2s infinite;
+    flex-shrink:0;
+}
+@keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(244,71,94,.55);}
+    70%{box-shadow:0 0 0 13px rgba(244,71,94,0);}
+    100%{box-shadow:0 0 0 0 rgba(244,71,94,0);}
+}
+.incident-title h1{
+    margin:0;
+    font-size:28px;
+    font-weight:700;
+    letter-spacing:-.01em;
+}
+.incident-title h1 .offline{color:var(--bad);}
+
+.clock{
+    font-size:14px;
+    color:var(--text-muted);
+    letter-spacing:.02em;
+    font-variant-numeric:tabular-nums;
+}
+
+.grid{
+    flex:1;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    align-items:start;
+    gap:20px;
+    padding:24px 32px 40px;
+    max-width:1200px;
+    margin:0 auto;
+    width:100%;
+}
+.card{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:22px;
+    position:relative;
+    overflow:hidden;
+}
+.card::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;
+    height:3px;
+    background:var(--gradient);
+    opacity:.85;
+}
+.card h2{
+    margin:0 0 16px;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+}
+
+.timeline{
+    list-style:none;
+    margin:0;
+    padding:0 0 0 4px;
+    border-left:2px solid var(--border);
+}
+.timeline li{
+    position:relative;
+    padding:0 0 18px 20px;
+}
+.timeline li:last-child{padding-bottom:0;}
+.timeline li::before{
+    content:"";
+    position:absolute;
+    left:-6.5px;
+    top:3px;
+    width:11px;
+    height:11px;
+    border-radius:50%;
+    background:var(--bg-card);
+    border:2px solid var(--teal);
+}
+.timeline .t-time{
+    display:block;
+    font-size:12px;
+    font-weight:700;
+    color:var(--teal);
+    letter-spacing:.02em;
+}
+.timeline .t-event{
+    display:block;
+    font-size:14px;
+    color:var(--text);
+    margin-top:2px;
+}
+
+.section-label{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    margin:0 0 10px;
+}
+.section-label.known{color:var(--green);}
+.section-label.withheld{color:var(--text-muted);}
+
+ul.plain{
+    list-style:none;
+    margin:0 0 20px;
+    padding:0;
+}
+ul.plain:last-child{margin-bottom:0;}
+ul.plain li{
+    font-size:14px;
+    padding:5px 0 5px 18px;
+    position:relative;
+    color:var(--text);
+}
+ul.plain li::before{
+    content:"—";
+    position:absolute;
+    left:0;
+    color:var(--text-muted);
+}
+ul.plain.withheld li{color:var(--text-muted);}
+ul.plain li b{color:var(--green);}
+
+.divider{
+    border:none;
+    border-top:1px solid var(--border);
+    margin:4px 0 18px;
+}
+
+.focus-list{
+    list-style:none;
+    margin:0 0 18px;
+    padding:0;
+}
+.focus-list li{
+    font-size:14px;
+    padding:6px 0 6px 22px;
+    position:relative;
+}
+.focus-list li::before{
+    content:"→";
+    position:absolute;
+    left:0;
+    color:var(--teal);
+    font-weight:700;
+}
+.next-update{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(255,255,255,.03);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:10px 14px;
+    font-size:13px;
+}
+.next-update b{color:var(--text);}
+.next-update span.time{color:var(--teal);font-weight:700;}
+
+footer{
+    text-align:center;
+    padding:20px;
+    color:var(--text-muted);
+    font-size:12px;
+    border-top:1px solid var(--border);
+}
+.contacts-line{
+    text-align:center;
+    padding:0 20px 16px;
+    font-size:13px;
+    letter-spacing:.01em;
+    color:var(--text);
+    white-space:nowrap;
+}
+
+@media (max-width:640px){
+    header{
+        padding:24px 16px;
+        gap:14px;
+    }
+    .logo{
+        height:40px;
+        padding:6px 14px;
+    }
+    .incident-title h1{
+        font-size:20px;
+    }
+    .clock{
+        font-size:12px;
+    }
+    .grid{
+        grid-template-columns:1fr;
+        gap:16px;
+        padding:16px 16px 28px;
+    }
+    .card{
+        padding:18px;
+    }
+    .contacts-line{
+        font-size:11px;
+        line-height:1.7;
+        padding:0 16px 14px;
+        white-space:normal;
+    }
+    footer{
+        padding:16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-accent"></div>
+
+<header>
+<img src="Greenvolt-New-Logo-1-e1689966477920.png" alt="GreenVolt" class="logo">
+
+<div class="incident-title">
+<span class="pulse-dot"></span>
+<h1>Active Incident — Power Generation <span class="offline">Offline</span></h1>
+</div>
+
+<span class="clock" id="clock"></span>
+</header>
+
+<div class="grid">
+
+<div class="card">
+<h2>Attack Timeline</h2>
+
+<ul class="timeline">
+<li><span class="t-time">Aug 12, 10:25 AM</span><span class="t-event">Brute-force intrusion attempt begins<br>Spike in network traffic detected</span></li>
+<li><span class="t-time">Aug 12, 10:47 AM</span><span class="t-event">Turbine systems shut down; incident detected</span></li>
+<li><span class="t-time">Aug 12, 11:00 AM</span><span class="t-event">Internal communications disrupted</span></li>
+<li><span class="t-time">Aug 14, Today</span><span class="t-event">Recovery &amp; Investigation ongoing</span></li>
+</ul>
+
+</div>
+
+<div class="card">
+
+<p class="section-label known">Known Facts</p>
+<ul class="plain">
+<li><b>No human injuries reported</b></li>
+<li>Incident detected 10:47 AM, Wed Aug 12</li>
+<li>Initial compromise: internal monitoring &amp; control systems</li>
+<li>Plant running on minimal emergency power</li>
+<li>Manual verification underway before restoring automated control</li>
+<li>Grid partners &amp; regulators notified</li>
+</ul>
+
+<hr class="divider">
+
+<p class="section-label withheld">Withheld for Security</p>
+<ul class="plain withheld">
+<li>Threat actor attribution</li>
+<li>Full technical evidence &amp; indicators of compromise</li>
+<li>Specific remediation &amp; hardening details</li>
+</ul>
+
+</div>
+
+<div class="card">
+<h2>Press Briefing</h2>
+
+<p class="section-label known" style="color:var(--text-muted);">Current Focus</p>
+<ul class="focus-list">
+<li>Complete eradication &amp; harden systems</li>
+<li>Restore power safely</li>
+<li>Support ongoing forensic investigation</li>
+<li>Coordinate with grid partners, regulators &amp; law enforcement</li>
+</ul>
+
+<div class="next-update"><b>Next Update</b><span class="time">Aug 15</span></div>
+
+</div>
+
+</div>
+
+<div class="contacts-line">Eric Phan - CISO &nbsp;•&nbsp; Connor Decan - BC/DR &nbsp;•&nbsp; Denishan Savarimuthu - Communications Manager &nbsp;•&nbsp; Mohamad Mohamad - TI Lead &nbsp;•&nbsp; Jesse Lance Barreto - Lead Investigator</div>
+
+<footer>
+GreenVolt Energy • Incident Response Dashboard • Press Release
+</footer>
+
+<script>
+function tickClock(){
+    var now = new Date();
+    var dateStr = now.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    var timeStr = now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    document.getElementById('clock').textContent = dateStr + '  •  ' + timeStr;
+}
+tickClock();
+setInterval(tickClock, 1000);
+</script>
+
+</body>
+</html>
